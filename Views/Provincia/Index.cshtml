@@ -1,0 +1,70 @@
+﻿@model IList<MVCApplication.Models.ProvinciaModel>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index de Provincia</h2>
+<table>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descripcion)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { idProvincia = item.Id })
+                @Html.ActionLink("Delete", "Delete", new { idProvincia = item.Id })
+            </td>
+        </tr>
+    }
+</table>
+<input type="button" name="name" value="Prueba View" onclick="CargarView()" />
+<div id="popup"></div>
+
+
+<script type="text/javascript">
+    function CargarView() {
+        $.ajax({
+            url: '@Url.Action("CargarPopup", "Provincia")',
+            success: function(respuesta) {
+                $("#popup").html(respuesta);
+                $("#popup").dialog({
+                    modal: true,
+                    buttons: [
+                        {
+                            text: "Aceptar",
+                            id: "btnAceptarDetalle",
+                            click: function() {
+                                $.ajax({
+                                    url: '@Url.Action("GuardarDatosPopup", "Provincia")',
+                                    type: 'POST',
+                                    data: ObtenerDatosPopup(),
+                                    success: function(jsonResponse) {
+                                        alert(jsonResponse);
+                                        $("#popup").dialog("close");
+                                    },
+                                    error: function(e) { alert("Error: " + e); },
+                                    dataType: 'text'
+                                });
+                            }
+                        }
+                    ]
+                });
+            },
+            error: function(error) {}
+        });
+    }
+
+    function ObtenerDatosPopup() {
+        var datos = {
+            'IdTipoTrabajo': $("#ddlTiposTrabajo").val(),
+            'InSitu': $("#InSitu").Attr("checked"),
+            'Tercerizado': $("#Tercerizado").Attr("checked")
+        };
+        return datos;
+    }
+</script>
+
